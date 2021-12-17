@@ -77,6 +77,11 @@ rosidl_target_interfaces(${library_name}
   ${PROJECT_NAME} "rosidl_typesupport_cpp")
 
 add_executable(
+  odom_transform_node
+  src/odom_transform_node.cpp
+)
+
+add_executable(
   ekf_node
   src/ekf_node.cpp
 )
@@ -122,8 +127,18 @@ ament_target_dependencies(
 )
 
 target_link_libraries(
+  odom_transform_node
+  ${library_name}
+)
+
+target_link_libraries(
   ekf_node
   ${library_name}
+)
+
+ament_target_dependencies(
+  odom_transform_node
+  rclcpp
 )
 
 ament_target_dependencies(
@@ -311,6 +326,7 @@ endif()
 install(
   TARGETS
   navsat_transform_node
+  odom_transform_node
   ekf_node
   ukf_node
   robot_localization_listener_node
