@@ -16,13 +16,12 @@
 class OdomTransform : public rclcpp::Node
 {
 private:
-    std::string odom_topic, pose_topic, original_frame, new_frame;
+    std::string odom_topic, pose_topic, target_frame;
     std::unique_ptr<tf2_ros::Buffer> buffer;
     std::shared_ptr<tf2_ros::TransformListener> transform_listener;
 
     rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odom_sub;
     rclcpp::Publisher<geometry_msgs::msg::PoseWithCovarianceStamped>::SharedPtr pose_pub;
-    geometry_msgs::msg::TransformStamped transform;
 
     void odom_callback(const nav_msgs::msg::Odometry::SharedPtr msg) const;
 

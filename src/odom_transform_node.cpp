@@ -12,30 +12,18 @@ OdomTransform::OdomTransform() : Node("odom_transform")
     // get parameters
     this->declare_parameter<std::string>("odom_topic");
     this->declare_parameter<std::string>("pose_topic");
-    this->declare_parameter<std::string>("original_frame");
-    this->declare_parameter<std::string>("new_frame");
+    this->declare_parameter<std::string>("target_frame");
 
     this->get_parameter("odom_topic", odom_topic);
     this->get_parameter("pose_topic", pose_topic);
-    this->get_parameter("original_frame", original_frame);
-    this->get_parameter("new_frame", new_frame);
+    this->get_parameter("target_frame", target_frame);
 
-    RCLCPP_INFO(this->get_logger(), "Projecting '%s' from '%s' to '%s' on topic '%s'",
-        odom_topic.c_str(), original_frame.c_str(), new_frame.c_str(), pose_topic.c_str());
+    RCLCPP_INFO(this->get_logger(), "Projecting '%s' to frame '%s' on topic '%s'",
+        odom_topic.c_str(), target_frame.c_str(), pose_topic.c_str());
 
     // initialize tf2
     buffer = std::make_unique<tf2_ros::Buffer>(this->get_clock());
     transform_listener = std::make_shared<tf2_ros::TransformListener>(*buffer);
-    while (true)
-    {
-        try {
-            transform = buffer->lookupTransform(new_frame, original_frame, rclcpp::Time(0));
-            break;
-        } catch (tf2::LookupException& e) {
-            RCLCPP_ERROR(this->get_logger(), "%s", e.what());
-            rclcpp::sleep_for(5s);
-        }
-    }
 
     // initialize odom subscriber
     odom_sub = this->create_subscription<nav_msgs::msg::Odometry>(odom_topic, 10,
@@ -58,7 +46,7 @@ void OdomTransform::odom_callback(const nav_msgs::msg::Odometry::SharedPtr msg) 
     pose_before.orientation.z = msg->pose.pose.orientation.z;
     pose_before.orientation.w = msg->pose.pose.orientation.w;
 
-    tf2::doTransform(pose_before, pose, transform);
+    pose = buffer->transform(pose_before, target_frame);
 
     // create PoseWithCovarianceStamped
     geometry_msgs::msg::PoseWithCovariance posec;
@@ -66,7 +54,7 @@ void OdomTransform::odom_callback(const nav_msgs::msg::Odometry::SharedPtr msg) 
     posec.covariance = msg->pose.covariance;
     geometry_msgs::msg::PoseWithCovarianceStamped posecs;
     posecs.header = msg->header;
-    posecs.header.frame_id = new_frame;
+    posecs.header.frame_id = target_frame;
     posecs.pose = posec;
 
     // publish pose
