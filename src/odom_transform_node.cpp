@@ -1,5 +1,10 @@
 #include "robot_localization/odom_transform_node.hpp"
+#include "rclcpp/clock.hpp"
 #include "rclcpp/logging.hpp"
+#include "rclcpp/utilities.hpp"
+#include <chrono>
+
+using namespace std::chrono_literals;
 
 
 OdomTransform::OdomTransform() : Node("odom_transform")
@@ -21,7 +26,16 @@ OdomTransform::OdomTransform() : Node("odom_transform")
     // initialize tf2
     buffer = std::make_unique<tf2_ros::Buffer>(this->get_clock());
     transform_listener = std::make_shared<tf2_ros::TransformListener>(*buffer);
-    transform = buffer->lookupTransform(new_frame, original_frame, rclcpp::Time(0));
+    while (true)
+    {
+        try {
+            transform = buffer->lookupTransform(new_frame, original_frame, rclcpp::Time(0));
+            break;
+        } catch (tf2::LookupException& e) {
+            RCLCPP_ERROR(this->get_logger(), "%s", e.what());
+            rclcpp::sleep_for(5s);
+        }
+    }
 
     // initialize odom subscriber
     odom_sub = this->create_subscription<nav_msgs::msg::Odometry>(odom_topic, 10,
