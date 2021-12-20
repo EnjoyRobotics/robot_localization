@@ -1,4 +1,5 @@
 #include "robot_localization/odom_transform_node.hpp"
+#include "rclcpp/logging.hpp"
 
 
 OdomTransform::OdomTransform() : Node("odom_transform")
@@ -9,10 +10,13 @@ OdomTransform::OdomTransform() : Node("odom_transform")
     this->declare_parameter<std::string>("original_frame");
     this->declare_parameter<std::string>("new_frame");
 
-    odom_topic     = this->get_parameter("odom_topic").as_string();
-    pose_topic     = this->get_parameter("pose_topic").as_string();
-    original_frame = this->get_parameter("original_frame").as_string();
-    new_frame      = this->get_parameter("new_frame").as_string();
+    this->get_parameter("odom_topic", odom_topic);
+    this->get_parameter("pose_topic", pose_topic);
+    this->get_parameter("original_frame", original_frame);
+    this->get_parameter("new_frame", new_frame);
+
+    RCLCPP_INFO(this->get_logger(), "Projecting '%s' from '%s' to '%s' on topic '%s'",
+        odom_topic.c_str(), original_frame.c_str(), new_frame.c_str(), pose_topic.c_str());
 
     // initialize tf2
     buffer = std::make_unique<tf2_ros::Buffer>(this->get_clock());

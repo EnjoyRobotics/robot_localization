@@ -2,7 +2,7 @@ odom_transform_node:
     ros__parameters:
         odom_topic: t265_camera/odom
         pose_topic: t265_camera/odom/to_base
-        original_trame: t265_camera_link
+        original_frame: t265_camera_link
         new_frame: base_link
 ekf_filter_node:
     ros__parameters:
