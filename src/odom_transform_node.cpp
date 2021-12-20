@@ -58,8 +58,7 @@ void OdomTransform::odom_callback(const nav_msgs::msg::Odometry::SharedPtr msg) 
     pose_before.orientation.z = msg->pose.pose.orientation.z;
     pose_before.orientation.w = msg->pose.pose.orientation.w;
 
-    // geometry_msgs::msg::Point pt1, pt2;
-    // tf2::doTransform(pt1, pt2, transform);
+    tf2::doTransform(pose_before, pose, transform);
 
     // create PoseWithCovarianceStamped
     geometry_msgs::msg::PoseWithCovariance posec;
@@ -67,6 +66,7 @@ void OdomTransform::odom_callback(const nav_msgs::msg::Odometry::SharedPtr msg) 
     posec.covariance = msg->pose.covariance;
     geometry_msgs::msg::PoseWithCovarianceStamped posecs;
     posecs.header = msg->header;
+    posecs.header.frame_id = new_frame;
     posecs.pose = posec;
 
     // publish pose
