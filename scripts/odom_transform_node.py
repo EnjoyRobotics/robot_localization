@@ -34,19 +34,19 @@ class OdomTransform(Node):
     def odom_callback(self, odom: Odometry) -> type(None):
         pose_before = PoseStamped()
         pose_before.header = odom.header
-        pose_before.pose.pose.position.x    = odom.pose.pose.position.x
-        pose_before.pose.pose.position.y    = odom.pose.pose.position.y
-        pose_before.pose.pose.position.z    = odom.pose.pose.position.z
-        pose_before.pose.pose.orientation.x = odom.pose.pose.orientation.x
-        pose_before.pose.pose.orientation.y = odom.pose.pose.orientation.y
-        pose_before.pose.pose.orientation.z = odom.pose.pose.orientation.z
-        pose_before.pose.pose.orientation.w = odom.pose.pose.orientation.w
+        pose_before.pose.position.x    = odom.pose.pose.position.x
+        pose_before.pose.position.y    = odom.pose.pose.position.y
+        pose_before.pose.position.z    = odom.pose.pose.position.z
+        pose_before.pose.orientation.x = odom.pose.pose.orientation.x
+        pose_before.pose.orientation.y = odom.pose.pose.orientation.y
+        pose_before.pose.orientation.z = odom.pose.pose.orientation.z
+        pose_before.pose.orientation.w = odom.pose.pose.orientation.w
 
         pose = self.buffer.transform(pose_before, self.target_frame)
 
         posecs = PoseWithCovarianceStamped()
         posecs.header = pose.header
-        posecs.pose.pose = pose.pose
+        posecs.pose = pose.pose
         posecs.pose.covariance = odom.pose.covariance
 
         self.pose_pub.publish(posecs)
