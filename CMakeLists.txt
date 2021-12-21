@@ -317,6 +317,11 @@ install(
   RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
 
+install(PROGRAMS
+ scripts/odom_transform_node.py
+ DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
 install(TARGETS ${library_name}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
