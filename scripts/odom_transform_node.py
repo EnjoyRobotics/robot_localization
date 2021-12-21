@@ -10,26 +10,26 @@ from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
 
 
 class OdomTransform(Node):
-    def __init(self):
+    def __init__(self):
         super().__init__('odom_transform')
 
         # get parameters
-        self.declare_parameter('odom_topic')
-        self.declare_parameter('pose_topic')
-        self.declare_parameter('target_frame')
+        self.declare_parameter('odom_topic',   'odom')
+        self.declare_parameter('pose_topic',   'pose')
+        self.declare_parameter('target_frame', 'base_link')
 
-        self.odom_topic = self.get_parameter('odom_topic')
-        self.pose_topic = self.get_parameter('pose_topic')
-        self.target_frame = self.get_parameter('target_frame')
+        self.odom_topic = self.get_parameter('odom_topic').value
+        self.pose_topic = self.get_parameter('pose_topic').value
+        self.target_frame = self.get_parameter('target_frame').value
 
-        self.get_logger().info(f'Projecting {odom_topic} to frame {target_frame} on topic {pose_topic}')
+        self.get_logger().info(f'Projecting {self.odom_topic} to frame {self.target_frame} on topic {self.pose_topic}')
 
         # initialize tf2
         self.buffer = Buffer()
 
         # initialize ros communication
-        self.odom_sub = self.create_subscription(Odometry, self.odom_topic, self.odom_callback)
-        self.pose_pub = self.create_publisher(PoseWithCovarianceStamped, pose_topic)
+        self.odom_sub = self.create_subscription(Odometry, self.odom_topic, self.odom_callback, 10)
+        self.pose_pub = self.create_publisher(PoseWithCovarianceStamped, self.pose_topic, 10)
 
     def odom_callback(self, odom: Odometry) -> type(None):
         pose_before = PoseStamped()
