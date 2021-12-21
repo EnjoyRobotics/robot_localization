@@ -320,8 +320,8 @@ install(
 )
 
 install(PROGRAMS
- scripts/odom_transform_node.py
- DESTINATION lib/${PROJECT_NAME}
+  scripts/odom_transform_node.py
+  DESTINATION lib/${PROJECT_NAME}
 )
 
 install(TARGETS ${library_name}
