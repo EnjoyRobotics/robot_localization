@@ -20,7 +20,7 @@ ekf_filter_node:
         base_link_frame: base_link
         world_frame: odom # odom if fusing odometry, set to map if fusing global position data
 
-        use_control: false
+        use_control: true
         stamped_control: false
         control_config: [true, false, false, false, false, true]
 
