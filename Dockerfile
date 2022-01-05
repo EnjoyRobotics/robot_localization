@@ -26,6 +26,8 @@ ENV DEBIAN_FRONTEND noninteractive
 ENV export MAKEFLAGS="-j12"
 
 RUN apt update
+RUN apt install -y python3-pip
+RUN pip3 install scipy
 
 
 # install overlay dependencies
