@@ -15,7 +15,9 @@ if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
 endif()
 
 find_package(ament_cmake REQUIRED)
+find_package(ament_cmake_python REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclpy REQUIRED)
 find_package(diagnostic_msgs REQUIRED)
 find_package(diagnostic_updater REQUIRED)
 find_package(geographic_msgs REQUIRED)
@@ -315,6 +317,11 @@ install(
   ukf_node
   robot_localization_listener_node
   RUNTIME DESTINATION lib/${PROJECT_NAME}
+)
+
+install(PROGRAMS
+  scripts/odom_transform_node.py
+  DESTINATION lib/${PROJECT_NAME}
 )
 
 install(TARGETS ${library_name}

@@ -32,4 +32,11 @@ def generate_launch_description():
             output='screen',
             parameters=[os.path.join(get_package_share_directory("robot_localization"), 'params', 'ekf.yaml')],
            ),
+        launch_ros.actions.Node(
+            package='robot_localization',
+            executable='odom_transform_node.py',
+            name='odom_transform_node',
+            output='screen',
+            parameters=[os.path.join(get_package_share_directory("robot_localization"), 'params', 'ekf.yaml')],
+           ),
 ])
