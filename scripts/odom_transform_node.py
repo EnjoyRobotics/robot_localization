@@ -49,8 +49,7 @@ class OdomTransform(Node):
         # get transform from target_frame to original one
         tf = TransformStamped()
         try:
-            now = self.get_clock().now()
-            tf  = self.buffer.lookup_transform(odom.child_frame_id, self.target_frame, now)
+            tf  = self.buffer.lookup_transform(odom.child_frame_id, self.target_frame, rclpy.time.Time())
         except TransformException:
             self.get_logger().warn(f'Could not get transform from {odom.child_frame_id} to {self.target_frame}')
             return
