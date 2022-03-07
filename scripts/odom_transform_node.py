@@ -18,7 +18,7 @@ from geometry_msgs.msg import PoseWithCovarianceStamped, TransformStamped
 class OdomTransform(Node):
     def __init__(self):
         super().__init__('odom_transform')
-
+        self.counter = 0
         # get parameters
         self.declare_parameter('odom_topic',   '/t265_camera/odom')
         self.declare_parameter('pose_topic',   '/t265_camera/odom/to_base')
@@ -35,11 +35,16 @@ class OdomTransform(Node):
         self.tf_listener = TransformListener(self.buffer, self)
 
         # initialize ros communication
-        self.odom_sub = self.create_subscription(Odometry, self.odom_topic, self.odom_callback, 10)
-        self.pose_pub = self.create_publisher(PoseWithCovarianceStamped, self.pose_topic, 10)
+        self.odom_sub = self.create_subscription(Odometry, self.odom_topic, self.odom_callback, 1)
+        self.pose_pub = self.create_publisher(PoseWithCovarianceStamped, self.pose_topic, 1)
 
 
     def odom_callback(self, odom: Odometry) -> type(None):
+        if self.counter < 10:
+            self.counter += 1
+            return
+        else:
+            self.counter = 0
         # create PoseWithCovarianceStamped from Odometry
         pose                 = PoseWithCovarianceStamped()
         pose.header          = odom.header
