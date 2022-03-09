@@ -5,8 +5,8 @@ odom_transform_node:
         target_frame: base_link
 ekf_filter_node:
     ros__parameters:
-        frequency: 30.
-        sensor_timeout: 0.1
+        frequency: 30.0
+        sensor_timeout: 0.5
         two_d_mode: true
         transform_time_offset: 0.0
         transform_timeout: 0.0
@@ -24,6 +24,15 @@ ekf_filter_node:
         stamped_control: false
         control_config: [true, false, false, false, false, true]
 
+        odom0: /odom_wheel
+        # x, y, z, roll, pitch, yaw, vx, vy, vz, vroll, vpitch, vyaw, ax, ay, az
+        odom0_config: [true,  true,  false,
+                       false, false, true,
+                       true,  true,  false,
+                       false, false, true,
+                       false, false, false]
+        odom0_differential: true
+        odom0_relative: false
         pose0: /t265_camera/odom/to_base
         # x, y, z, roll, pitch, yaw, vx, vy, vz, vroll, vpitch, vyaw, ax, ay, az
         pose0_config: [true,  true,  false,
