@@ -13,15 +13,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from launch import LaunchDescription
-from ament_index_python.packages import get_package_share_directory
-import launch_ros.actions
 import os
-import yaml
-from launch.substitutions import EnvironmentVariable, LaunchConfiguration
-import pathlib
-import launch.actions
+
+from ament_index_python.packages import get_package_share_directory
+
+from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
+from launch.substitutions import LaunchConfiguration
+from launch.conditions import IfCondition
+
+import launch_ros.actions
+
 
 def generate_launch_description():
 
@@ -29,9 +31,11 @@ def generate_launch_description():
     if simulation in [None, '']:
         simulation = 'False'
     arg_use_sim_time = LaunchConfiguration('use_sim_time')
+    arg_use_sensor_fusion = LaunchConfiguration('use_sensor_fusion')
 
     return LaunchDescription([
         DeclareLaunchArgument('use_sim_time', default_value=simulation),
+        DeclareLaunchArgument('use_sensor_fusion', default_value='False'),
 
         launch_ros.actions.Node(
             package='robot_localization',
@@ -40,11 +44,21 @@ def generate_launch_description():
             output='screen',
             parameters=[os.path.join(get_package_share_directory("robot_localization"), 'params', 'ekf.yaml'),
                 {'use_sim_time': arg_use_sim_time}],
+            condition=IfCondition(arg_use_sensor_fusion),
            ),
         launch_ros.actions.Node(
             package='robot_localization',
             executable='odom_transform_node.py',
             name='odom_transform_node',
+            output='screen',
+            parameters=[os.path.join(get_package_share_directory("robot_localization"), 'params', 'ekf.yaml'),
+                {'use_sim_time': arg_use_sim_time}],
+            condition=IfCondition(arg_use_sensor_fusion),
+           ),
+        launch_ros.actions.Node(
+            package='ros2_laser_scan_matcher',
+            executable='laser_scan_matcher',
+            name='laser_scan_matcher',
             output='screen',
             parameters=[os.path.join(get_package_share_directory("robot_localization"), 'params', 'ekf.yaml'),
                 {'use_sim_time': arg_use_sim_time}],
