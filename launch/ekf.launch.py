@@ -20,6 +20,7 @@ from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
+from launch.conditions import IfCondition
 
 import launch_ros.actions
 
@@ -30,9 +31,11 @@ def generate_launch_description():
     if simulation in [None, '']:
         simulation = 'False'
     arg_use_sim_time = LaunchConfiguration('use_sim_time')
+    arg_use_sensor_fusion = LaunchConfiguration('use_sensor_fusion')
 
     return LaunchDescription([
         DeclareLaunchArgument('use_sim_time', default_value=simulation),
+        DeclareLaunchArgument('use_sensor_fusion', default_value='False'),
 
         launch_ros.actions.Node(
             package='robot_localization',
@@ -41,6 +44,7 @@ def generate_launch_description():
             output='screen',
             parameters=[os.path.join(get_package_share_directory("robot_localization"), 'params', 'ekf.yaml'),
                 {'use_sim_time': arg_use_sim_time}],
+            condition=IfCondition(arg_use_sensor_fusion),
            ),
         launch_ros.actions.Node(
             package='robot_localization',
@@ -49,6 +53,7 @@ def generate_launch_description():
             output='screen',
             parameters=[os.path.join(get_package_share_directory("robot_localization"), 'params', 'ekf.yaml'),
                 {'use_sim_time': arg_use_sim_time}],
+            condition=IfCondition(arg_use_sensor_fusion),
            ),
         launch_ros.actions.Node(
             package='ros2_laser_scan_matcher',
