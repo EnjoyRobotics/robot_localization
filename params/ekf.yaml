@@ -3,6 +3,12 @@ odom_transform_node:
         odom_topic: t265_camera/odom
         pose_topic: t265_camera/odom/to_base
         target_frame: base_link
+laser_scan_matcher:
+  ros__parameters:
+    do_compute_covariance: 1
+    publish_tf: true
+    publish_odom: laser_scan_matcher/odom
+    laser_frame: base_link
 ekf_filter_node:
     ros__parameters:
         frequency: 30.0
