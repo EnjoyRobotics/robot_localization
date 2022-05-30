@@ -1,0 +1,3 @@
+[submodule "ros2_laser_scan_matcher"]
+	path = ros2_laser_scan_matcher
+	url = https://github.com/EnjoyRobotics/ros2_laser_scan_matcher.git
