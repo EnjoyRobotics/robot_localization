@@ -3,34 +3,18 @@ ARG OVERLAY_WS=/opt/ros/overlay_ws
 
 
 # Update packages list, download packages
-RUN apt update --fix-missing -y
-RUN apt install -y libboost-thread-dev
-RUN apt install -y python3-pip
-RUN pip3 install scipy
+RUN apt-get update --fix-missing -y
 
-
-# Install external source
-WORKDIR /$OVERLAY_WS/src
-RUN git clone https://github.com/AlexKaravaev/csm.git
-RUN git clone https://github.com/AlexKaravaev/ros2_laser_scan_matcher.git
-
-# Install dependencies
-WORKDIR $OVERLAY_WS
-RUN . /opt/ros/$ROS_DISTRO/setup.sh && \
-    rosdep install -y \
-      --from-paths src\
-      --ignore-src
-
-# Build source
-RUN . /opt/ros/$ROS_DISTRO/setup.sh && \
-    colcon build --symlink-install \
-        --packages-select csm ros2_laser_scan_matcher
-
+# multi-stage for building
+RUN apt install ros-galactic-navigation2 -y
+RUN apt install ros-galactic-nav2-bringup -y
 
 # Clone source
 WORKDIR /$OVERLAY_WS/src
+RUN git clone https://github.com/AlexKaravaev/csm.git
 COPY . ./robot_localization
 
+RUN mv robot_localization/ros2_laser_scan_matcher ./ros2_laser_scan_matcher
 
 # Install dependencies
 WORKDIR $OVERLAY_WS
@@ -42,9 +26,7 @@ RUN . /opt/ros/$ROS_DISTRO/setup.sh && \
 
 # Build source
 RUN . /opt/ros/$ROS_DISTRO/setup.sh && \
-    colcon build --symlink-install \
-        --packages-select robot_localization
-
+    colcon build --symlink-install
 
 # source entrypoint setup
 ENV OVERLAY_WS $OVERLAY_WS
