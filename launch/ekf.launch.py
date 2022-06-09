@@ -60,7 +60,7 @@ def generate_launch_description():
             executable='laser_scan_matcher',
             name='laser_scan_matcher',
             output='screen',
-            parameters=[os.path.join(get_package_share_directory("robot_localization"), 'params', 'ekf.yaml'),
+            parameters=[os.path.join(get_package_share_directory("ros2_laser_scan_matcher"), 'params', 'matcher.yaml'),
                 {'use_sim_time': arg_use_sim_time}],
            ),
 ])
