@@ -3,11 +3,8 @@ ARG OVERLAY_WS=/opt/ros/overlay_ws
 
 
 # Update packages list, download packages
-RUN apt-get update --fix-missing -y
-
-# multi-stage for building
-RUN apt install ros-galactic-navigation2 -y
-RUN apt install ros-galactic-nav2-bringup -y
+RUN apt-get update --fix-missing && apt install -y ros-galactic-navigation2  \ 
+  ros-galactic-nav2-bringup
 
 # Clone source
 WORKDIR /$OVERLAY_WS/src
