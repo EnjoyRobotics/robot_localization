@@ -16,11 +16,9 @@ RUN mv robot_localization/ros2_laser_scan_matcher ./ros2_laser_scan_matcher
 # Install dependencies
 WORKDIR $OVERLAY_WS
 RUN . /opt/ros/$ROS_DISTRO/setup.sh && \
-    rosdep install -y \
-      --from-paths src\
-      --ignore-src \
-    && rm -rf /var/lib/apt/lists/*
-
+  rosdep install -y --from-paths src \
+  --ignore-src && rm -rf /var/lib/apt/lists/*
+  
 # Build source
 RUN . /opt/ros/$ROS_DISTRO/setup.sh && \
     colcon build --symlink-install
