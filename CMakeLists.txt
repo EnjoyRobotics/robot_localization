@@ -359,7 +359,7 @@ install(DIRECTORY
 
 # Install params config files.
 install(DIRECTORY
-  params
+  config
   launch
   DESTINATION share/${PROJECT_NAME}
   USE_SOURCE_PERMISSIONS
