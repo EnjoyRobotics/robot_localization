@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import os
+from distutils.util import strtobool
 
 from ament_index_python.packages import get_package_share_directory
 
@@ -26,15 +27,11 @@ import launch_ros.actions
 
 
 def generate_launch_description():
+    simulation = bool(strtobool(os.environ.get('SIMULATION')))
 
-    simulation = os.environ.get('SIMULATION')
-    if simulation in [None, '']:
-        simulation = 'False'
-    arg_use_sim_time = LaunchConfiguration('use_sim_time')
     arg_use_sensor_fusion = LaunchConfiguration('use_sensor_fusion')
 
     return LaunchDescription([
-        DeclareLaunchArgument('use_sim_time', default_value=simulation),
         DeclareLaunchArgument('use_sensor_fusion', default_value='False'),
 
         launch_ros.actions.Node(
@@ -43,7 +40,7 @@ def generate_launch_description():
             name='ekf_filter_node',
             output='screen',
             parameters=[os.path.join(get_package_share_directory("robot_localization"), 'params', 'ekf.yaml'),
-                {'use_sim_time': arg_use_sim_time}],
+                {'use_sim_time': simulation}],
             condition=IfCondition(arg_use_sensor_fusion),
            ),
         launch_ros.actions.Node(
@@ -52,7 +49,7 @@ def generate_launch_description():
             name='odom_transform_node',
             output='screen',
             parameters=[os.path.join(get_package_share_directory("robot_localization"), 'params', 'ekf.yaml'),
-                {'use_sim_time': arg_use_sim_time}],
+                {'use_sim_time': simulation}],
             condition=IfCondition(arg_use_sensor_fusion),
            ),
         launch_ros.actions.Node(
@@ -61,6 +58,6 @@ def generate_launch_description():
             name='laser_scan_matcher',
             output='screen',
             parameters=[os.path.join(get_package_share_directory("ros2_laser_scan_matcher"), 'params', 'matcher.yaml'),
-                {'use_sim_time': arg_use_sim_time}],
+                {'use_sim_time': simulation}],
            ),
 ])
