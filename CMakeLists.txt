@@ -321,6 +321,7 @@ install(
 
 install(PROGRAMS
   scripts/odom_transform_node.py
+  scripts/republish_as_euler.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
