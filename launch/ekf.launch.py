@@ -20,44 +20,50 @@ from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
-from launch.substitutions import LaunchConfiguration
 from launch.conditions import IfCondition
+from launch.substitutions import LaunchConfiguration
 
 import launch_ros.actions
 
 
-def generate_launch_description():
+def generate_launch_description() -> LaunchDescription:
     simulation = bool(strtobool(os.environ.get('SIMULATION')))
 
-    arg_use_sensor_fusion = LaunchConfiguration('use_sensor_fusion')
+    arg_sensor_fusion = LaunchConfiguration('sensor_fusion')
+
+    robot_loc_params = os.path.join(
+        get_package_share_directory('robot_localization'),
+        'config', 'ekf.yaml')
+
+    matcher_dir = get_package_share_directory('ros2_laser_scan_matcher')
 
     return LaunchDescription([
-        DeclareLaunchArgument('use_sensor_fusion', default_value='False'),
+        DeclareLaunchArgument('sensor_fusion', default_value='True'),
 
         launch_ros.actions.Node(
             package='robot_localization',
             executable='ekf_node',
             name='ekf_filter_node',
             output='screen',
-            parameters=[os.path.join(get_package_share_directory("robot_localization"), 'params', 'ekf.yaml'),
-                {'use_sim_time': simulation}],
-            condition=IfCondition(arg_use_sensor_fusion),
-           ),
+            parameters=[robot_loc_params, {'use_sim_time': simulation}],
+            condition=IfCondition(arg_sensor_fusion),
+        ),
+
         launch_ros.actions.Node(
             package='robot_localization',
             executable='odom_transform_node.py',
             name='odom_transform_node',
             output='screen',
-            parameters=[os.path.join(get_package_share_directory("robot_localization"), 'params', 'ekf.yaml'),
-                {'use_sim_time': simulation}],
-            condition=IfCondition(arg_use_sensor_fusion),
-           ),
+            parameters=[robot_loc_params, {'use_sim_time': simulation}],
+            condition=IfCondition(arg_sensor_fusion),
+        ),
+
         launch_ros.actions.Node(
             package='ros2_laser_scan_matcher',
             executable='laser_scan_matcher',
             name='laser_scan_matcher',
             output='screen',
-            parameters=[os.path.join(get_package_share_directory("ros2_laser_scan_matcher"), 'params', 'matcher.yaml'),
-                {'use_sim_time': simulation}],
-           ),
-])
+            parameters=[os.path.join(matcher_dir, 'params', 'matcher.yaml'),
+                        {'use_sim_time': simulation, 'publish_tf': False}],
+        ),
+    ])
