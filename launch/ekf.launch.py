@@ -63,7 +63,9 @@ def generate_launch_description() -> LaunchDescription:
             executable='laser_scan_matcher',
             name='laser_scan_matcher',
             output='screen',
-            parameters=[os.path.join(matcher_dir, 'params', 'matcher.yaml'),
+            parameters=[os.path.join(matcher_dir, 'config', 'matcher.yaml'),
                         {'use_sim_time': simulation, 'publish_tf': False}],
+            remappings=[
+                ('pose_with_covariance_stamped', 'laser_pose')],
         ),
     ])
