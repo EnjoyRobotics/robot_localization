@@ -330,14 +330,6 @@ install(TARGETS ${library_name}
   RUNTIME DESTINATION bin
 )
 
-# Install params config files.
-install(DIRECTORY
-  config
-  launch
-  DESTINATION share/${PROJECT_NAME}
-  USE_SOURCE_PERMISSIONS
-)
-
 ament_export_include_directories(include)
 ament_export_libraries(${library_name})
 ament_export_dependencies(rosidl_default_runtime)
