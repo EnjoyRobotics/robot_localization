@@ -3,23 +3,23 @@
 import numpy as np
 from geometry_msgs.msg import Transform, Pose, Vector3, Quaternion
 from scipy.spatial.transform import Rotation
-from conversion import convert
+from robot_localization.conversion import convert
 
 
 def to_homogenius(mat: np.ndarray) -> np.ndarray:
-    if mat.ndim == 1: # vector
-        new = np.ones((mat.shape[0]+1,), dtype=mat.dtype)
+    if mat.ndim == 1:  # vector
+        new = np.ones((mat.shape[0] + 1,), dtype=mat.dtype)
         new[0:-1] = mat
-    elif mat.ndim == 2: # matrix
-        new = np.zeros((mat.shape[0]+1, mat.shape[1]+1), dtype=mat.dtype)
+    elif mat.ndim == 2:  # matrix
+        new = np.zeros((mat.shape[0] + 1, mat.shape[1] + 1), dtype=mat.dtype)
         new[:-1, :-1] = mat
         new[-1, -1] = 1
-    else: # ???
+    else:  # ???
         raise NotImplementedError
     return new
 
 
-def Transform_to_T(tf: Transform, *, invert: bool=False) -> np.ndarray:
+def Transform_to_T(tf: Transform, *, invert: bool = False) -> np.ndarray:
     T_trans = convert(tf.translation, np.ndarray)
     if invert:
         T_trans = -T_trans
@@ -61,6 +61,6 @@ def transform(pose: Pose, tf: Transform) -> Pose:
 
 if __name__ == '__main__':
     tf = Transform()
-    tf.translation.y=8.
+    tf.translation.y = 8.
     tf.rotation.x = .5
     Transform_to_T(tf)

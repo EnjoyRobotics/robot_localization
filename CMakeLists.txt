@@ -319,8 +319,9 @@ install(
   RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
 
+ament_python_install_package(${PROJECT_NAME})
 install(PROGRAMS
-  scripts/odom_transform_node.py
+  robot_localization/odom_transform_node.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
