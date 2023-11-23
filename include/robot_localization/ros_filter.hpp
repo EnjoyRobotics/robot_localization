@@ -62,6 +62,7 @@
 #include "tf2_ros/buffer.h"
 #include "tf2_ros/transform_broadcaster.h"
 #include "tf2_ros/transform_listener.h"
+#include "rcl_interfaces/msg/set_parameters_result.hpp"
 
 namespace robot_localization
 {
@@ -93,6 +94,8 @@ using MeasurementQueue =
     Measurement>;
 using MeasurementHistoryDeque = std::deque<MeasurementPtr>;
 using FilterStateHistoryDeque = std::deque<FilterStatePtr>;
+using OnSetParametersCallbackHandle = rclcpp::node_interfaces::OnSetParametersCallbackHandle;
+using ParameterType = rcl_interfaces::msg::ParameterType;
 
 template<class T>
 class RosFilter : public rclcpp::Node
@@ -127,6 +130,10 @@ public:
       robot_localization::srv::ToggleFilterProcessing::Request> req,
     const std::shared_ptr<
       robot_localization::srv::ToggleFilterProcessing::Response> resp);
+
+  //! @brief Callback executed when a paramter change is detected
+  rcl_interfaces::msg::SetParametersResult
+  dynamicParametersCallback(std::vector<rclcpp::Parameter> parameters);
 
   //! @brief Callback method for receiving all acceleration (IMU) messages
   //! @param[in] msg - The ROS IMU message to take in.
@@ -846,6 +853,9 @@ protected:
   //! Must be on heap since pointer is passed to diagnostic_updater::FrequencyStatusParam
   //!
   double max_frequency_;
+
+  //! @brief Dynamic parameters handler
+  OnSetParametersCallbackHandle::SharedPtr dyn_params_handler;
 };
 
 }  // namespace robot_localization

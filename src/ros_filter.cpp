@@ -220,6 +220,28 @@ void RosFilter<T>::toggleFilterProcessingCallback(
   }
 }
 
+template<typename T>
+rcl_interfaces::msg::SetParametersResult
+RosFilter<T>::dynamicParametersCallback(std::vector<rclcpp::Parameter> parameters)
+{
+  auto result = rcl_interfaces::msg::SetParametersResult();
+
+  for (auto parameter : parameters) {
+    const auto & type = parameter.get_type();
+    const auto & name = parameter.get_name();
+
+    if (type == ParameterType::PARAMETER_BOOL) {
+      if (name == "publish_tf") {
+        publish_transform_ = parameter.as_bool();
+      }
+    }
+  }
+
+  result.successful = true;
+  return result;
+}
+
+
 // @todo: Replace with AccelWithCovarianceStamped
 template<typename T>
 void RosFilter<T>::accelerationCallback(
@@ -1867,6 +1889,10 @@ void RosFilter<T>::loadParams()
   load_covariance("initial_estimate_covariance", initial_estimate_error_covariance_);
   RF_DEBUG("Initial estimate covariance is:\n" << initial_estimate_error_covariance_ << "\n");
   filter_.setEstimateErrorCovariance(initial_estimate_error_covariance_);
+
+  // Add callback for dynamic parameters
+  dyn_params_handler = this->add_on_set_parameters_callback(
+    std::bind(&RosFilter<T>::dynamicParametersCallback, this, std::placeholders::_1));
 }
 
 template<typename T>

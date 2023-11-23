@@ -33,6 +33,7 @@ find_package(tf2_ros REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(Boost REQUIRED)
 find_package(yaml_cpp_vendor REQUIRED)
+find_package(rcl_interfaces REQUIRED)
 
 # Geographiclib installs FindGeographicLib.cmake to this non-standard location
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "/usr/share/cmake/geographiclib/")
@@ -121,6 +122,7 @@ ament_target_dependencies(
   tf2_geometry_msgs
   tf2_ros
   yaml_cpp_vendor
+  rcl_interfaces
 )
 
 target_link_libraries(
